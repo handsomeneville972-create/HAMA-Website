@@ -1,0 +1,74 @@
+/**
+ * HAMA Service Provider Service
+ *
+ * Queries service providers and their reviews from Supabase.
+ * Falls back to mock data when the DB tables haven't been created yet.
+ */
+
+import { supabase } from '../utils/supabaseClient';
+import { executeQuery } from './supabaseService';
+import { MOCK_SERVICE_PROVIDERS } from '../constants/data';
+import type { ServiceProvider } from '../constants/types';
+
+export async function getServiceProviders(params?: {
+  category?: string;
+  limit?: number;
+}): Promise<{ data: ServiceProvider[] | null; error: string | null }> {
+  return executeQuery<ServiceProvider[]>(
+    async () => {
+      let query = supabase
+        .from('service_providers')
+        .select('*')
+        .order('rating', { ascending: false });
+
+      if (params?.category) {
+        query = query.eq('category', params.category);
+      }
+      if (params?.limit) {
+        query = query.limit(params.limit);
+      }
+
+      const { data, error } = await query;
+      return { data: data as ServiceProvider[] | null, error };
+    },
+    params?.category
+      ? MOCK_SERVICE_PROVIDERS.filter(p => p.category === params.category)
+      : MOCK_SERVICE_PROVIDERS,
+  );
+}
+
+export async function getServiceProviderById(id: string): Promise<{ data: ServiceProvider | null; error: string | null }> {
+  return executeQuery<ServiceProvider>(
+    async () => {
+      const { data, error } = await supabase
+        .from('service_providers')
+        .select('*')
+        .eq('id', id)
+        .single();
+      return { data: data as ServiceProvider | null, error };
+    },
+    MOCK_SERVICE_PROVIDERS.find(p => p.id === id) ?? MOCK_SERVICE_PROVIDERS[0],
+  );
+}
+
+export async function searchServiceProviders(
+  query: string,
+): Promise<{ data: ServiceProvider[] | null; error: string | null }> {
+  const searchLower = query.toLowerCase();
+  return executeQuery<ServiceProvider[]>(
+    async () => {
+      const { data, error } = await supabase
+        .from('service_providers')
+        .select('*')
+        .or(`name.ilike.%${searchLower}%,description.ilike.%${searchLower}%,category.ilike.%${searchLower}%,subcategory.ilike.%${searchLower}%`)
+        .order('rating', { ascending: false });
+      return { data: data as ServiceProvider[] | null, error };
+    },
+    MOCK_SERVICE_PROVIDERS.filter(
+      p => p.name.toLowerCase().includes(searchLower) ||
+           p.description.toLowerCase().includes(searchLower) ||
+           p.category.toLowerCase().includes(searchLower) ||
+           p.subcategory.toLowerCase().includes(searchLower),
+    ),
+  );
+}

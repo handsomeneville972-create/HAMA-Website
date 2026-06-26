@@ -1,0 +1,676 @@
+import React, { useRef, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Animated, Dimensions, TouchableOpacity, Image, Linking } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ProductCard } from '../components/ProductCard';
+import { GlassCard } from '../components/GlassCard';
+import { EarlyAccessBadge } from '../components/EarlyAccessBadge';
+import { ReferralProgram } from '../components/ReferralProgram';
+import { EmailCaptureForm } from '../components/EmailCaptureForm';
+import { useEarlyAccess } from '../contexts/EarlyAccessContext';
+import { HomieAssistant } from '../components/HomieAssistant';
+import { SkeletonLoader } from '../components/SkeletonLoader';
+import { getProducts } from '../services/productService';
+import { getProperties, getNeighborhoods } from '../services/propertyService';
+import { formatPrice } from '../utils/currency';
+import type { Product, Property, Neighborhood } from '../constants/types';
+import { COLORS, RADIUS, SPACING, FONTS, SHADOWS, DIMENSIONS } from '../constants/theme';
+
+const { width, height } = Dimensions.get('window');
+
+export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
+  const { showFeatureRequest } = useEarlyAccess();
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const heroScale = useRef(new Animated.Value(1)).current;
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [neighborhoods, setNeighborhoods] = useState<Neighborhood[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [prodRes, propRes, hoodRes] = await Promise.all([
+        getProducts({ featured: true }),
+        getProperties({ limit: 4 }),
+        getNeighborhoods(),
+      ]);
+
+      if (prodRes.data) setFeaturedProducts(prodRes.data.slice(0, 4));
+      if (propRes.data) setProperties(propRes.data.slice(0, 3));
+      if (hoodRes.data) setNeighborhoods(hoodRes.data);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const recentProperties = properties;
+
+  // Parallax hero
+  const heroTranslateY = scrollY.interpolate({
+    inputRange: [0, 200],
+    outputRange: [0, -50],
+    extrapolate: 'clamp',
+  });
+
+  const heroOpacity = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [1, 0.8],
+    extrapolate: 'clamp',
+  });
+
+  return (
+    <View style={styles.container}>
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+        style={styles.scrollView}
+      >
+        {/* Hero Section */}
+        <Animated.View style={[styles.heroContainer, { transform: [{ translateY: heroTranslateY }], opacity: heroOpacity }]}>
+          <LinearGradient
+            colors={['#000000', '#0A0A0A', '#000000']}
+            style={styles.heroGradient}
+          >
+            <View style={[styles.heroContent, { paddingTop: insets.top + SPACING.xl }]}>
+              {/* Logo & Notification */}
+              <View style={styles.topBar}>
+                <View style={styles.logoContainer}>
+                  <LinearGradient colors={COLORS.gradientPremium} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.logoIcon}>
+                    <Text style={styles.logoText}>H</Text>
+                  </LinearGradient>
+                  <View>
+                    <View style={styles.logoNameRow}>
+                      <Text style={styles.logoName}>HAMA™</Text>
+                      <EarlyAccessBadge variant="compact" />
+                    </View>
+                    <Text style={styles.logoSlogan}>Need a house homie? We've got you!</Text>
+                  </View>
+                </View>
+                <TouchableOpacity style={styles.notifButton} onPress={() => navigation.navigate('Notifications')}>
+                  <Ionicons name="notifications-outline" size={24} color={COLORS.text} />
+                  <View style={styles.notifDot} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Hero 3D House Animation Placeholder */}
+              <View style={styles.hero3dContainer}>
+                <LinearGradient
+                  colors={['rgba(255,107,0,0.1)', 'transparent']}
+                  style={styles.hero3dBg}
+                />
+                <View style={styles.houseIcon}>
+                  <LinearGradient colors={COLORS.gradientPremium} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.houseIconGradient}>
+                    <Ionicons name="home" size={48} color="#fff" />
+                  </LinearGradient>
+                </View>
+                {/* Floating particles */}
+                {[...Array(8)].map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.particle,
+                      {
+                        top: Math.random() * 200,
+                        left: Math.random() * width,
+                        opacity: 0.3 + Math.random() * 0.5,
+                        width: 3 + Math.random() * 4,
+                        height: 3 + Math.random() * 4,
+                      },
+                    ]}
+                  />
+                ))}
+              </View>
+
+              {/* Search Bar */}
+              <TouchableOpacity style={styles.searchBar} onPress={() => navigation.navigate('Search')}>
+                <Ionicons name="search" size={20} color={COLORS.textSecondary} />
+                <Text style={styles.searchPlaceholder}>Search homes, products, services...</Text>
+              </TouchableOpacity>
+
+              {/* Quick Actions */}
+              <View style={styles.quickActions}>
+                <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('Marketplace')}>
+                  <View style={styles.quickActionIcon}>
+                    <Ionicons name="cart-outline" size={22} color={COLORS.primary} />
+                  </View>
+                  <Text style={styles.quickActionText}>Marketplace</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('Services')}>
+                  <View style={styles.quickActionIcon}>
+                    <Ionicons name="construct-outline" size={22} color={COLORS.accent} />
+                  </View>
+                  <Text style={styles.quickActionText}>Services</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('Community')}>
+                  <View style={styles.quickActionIcon}>
+                    <Ionicons name="people-outline" size={22} color={COLORS.secondary} />
+                  </View>
+                  <Text style={styles.quickActionText}>Community</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('Subscriptions')}>
+                  <View style={styles.quickActionIcon}>
+                    <Ionicons name="diamond-outline" size={22} color={COLORS.warning} />
+                  </View>
+                  <Text style={styles.quickActionText}>Premium</Text>
+                </TouchableOpacity>
+
+
+              </View>
+            </View>
+          </LinearGradient>
+        </Animated.View>
+
+        {/* Properties Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>🏠 Featured Properties</Text>
+            <TouchableOpacity>
+              <Text style={styles.seeAll}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          {loading ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.propertiesScroll}>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <View key={i} style={{ width: 280 }}>
+                  <SkeletonLoader type="card" />
+                </View>
+              ))}
+            </ScrollView>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.propertiesScroll}>
+              {properties.map((property) => (
+                <TouchableOpacity key={property.id} activeOpacity={0.9} style={styles.propertyCard} onPress={() => navigation.navigate('PropertyDetail', { propertyId: property.id })}>
+                  <GlassCard>
+                    <Image source={{ uri: property.images[0] }} style={styles.propertyImage} />
+                    <View style={styles.propertyInfo}>
+                      <Text style={styles.propertyTitle} numberOfLines={1}>{property.title}</Text>
+                      <Text style={styles.propertyPrice}>{formatPrice(property.price)}/mo</Text>
+                      <View style={styles.propertyMeta}>
+                        <Text style={styles.propertyMetaText}>{property.bedrooms} Bed • {property.bathrooms} Bath</Text>
+                        <Text style={styles.propertyLocation}>{property.location}</Text>
+                      </View>
+                    </View>
+                  </GlassCard>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+        </View>
+
+        {/* Marketplace Products */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>🛋️ Featured Products</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Marketplace')}>
+              <Text style={styles.seeAll}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          {loading ? (
+            <View style={styles.productsGrid}>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <View key={i} style={{ width: '48%' }}>
+                  <SkeletonLoader type="card" />
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.productsGrid}>
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  featured
+                  onPress={() => navigation.navigate('ProductDetail', { productId: product.id })}
+                />
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Neighborhoods */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>📍 Explore Neighborhoods</Text>
+            <TouchableOpacity>
+              <Text style={styles.seeAll}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          {loading ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.neighborhoodScroll}>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <SkeletonLoader key={i} type="banner" width={200} />
+              ))}
+            </ScrollView>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.neighborhoodScroll}>
+              {neighborhoods.map((hood) => (
+                <TouchableOpacity key={hood.id} activeOpacity={0.9} style={styles.neighborhoodCard}>
+                  <Image source={{ uri: hood.image }} style={styles.neighborhoodImage} />
+                  <LinearGradient colors={['transparent', 'rgba(0,0,0,0.9)']} style={styles.neighborhoodOverlay}>
+                    <Text style={styles.neighborhoodName}>{hood.name}</Text>
+                    <Text style={styles.neighborhoodRating}>⭐ {hood.rating} • KSh {hood.avgRent.toLocaleString()}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+        </View>
+
+        {/* Suggest a Feature */}
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.suggestFeatureBanner} onPress={() => showFeatureRequest()}>
+            <LinearGradient
+              colors={['rgba(255, 184, 77, 0.08)', 'rgba(255, 255, 255, 0.05)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.suggestFeatureBannerGrad}
+            >
+              <View style={styles.suggestFeatureIconCircle}>
+                <Ionicons name="bulb-outline" size={22} color={COLORS.warning} />
+              </View>
+              <View style={styles.suggestFeatureTextContent}>
+                <Text style={styles.suggestFeatureTitle}>Suggest a Feature</Text>
+                <Text style={styles.suggestFeatureDesc}>Help shape the future of HAMA — share your ideas</Text>
+              </View>
+              <Ionicons name="arrow-forward" size={18} color={COLORS.warning} />
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+        {/* Early Access: Email Capture + Referral */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>🚀 Early Access Program</Text>
+          </View>
+          <View style={styles.earlyAccessEngagement}>
+            <EmailCaptureForm compact message="Get product updates, new features, and early launch notifications." />
+            <ReferralProgram compact />
+          </View>
+        </View>
+
+        {/* Footer - Social Links */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Follow us</Text>
+          <View style={styles.socialRow}>
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={() => Linking.openURL('https://www.instagram.com/hamanasi2026/?utm_source=ig_web_button_share_sheet')}
+              activeOpacity={0.7}
+              accessibilityLabel="Follow us on Instagram"
+            >
+              <LinearGradient
+                colors={['#833AB4', '#FD1D1D', '#F77737', '#FCAF45']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.socialGradient}
+              >
+                <Ionicons name="logo-instagram" size={24} color="#fff" />
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={() => Linking.openURL('https://www.tiktok.com/@hama_nasi_2026?is_from_webapp=1&sender_device=pc')}
+              activeOpacity={0.7}
+              accessibilityLabel="Follow us on TikTok"
+            >
+              <View style={styles.tiktokButton}>
+                <Ionicons name="logo-tiktok" size={24} color="#fff" />
+              </View>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.footerHandle}>@hamanasi2026 / @hama_nasi_2026</Text>
+          <Text style={styles.footerTagline}>Need a house homie? We've got you! 🏠✨</Text>
+        </View>
+
+        {/* Bottom padding for Homie */}
+        <View style={{ height: 80 }} />
+      </Animated.ScrollView>
+
+      {/* Floating AI Assistant */}
+      <HomieAssistant onPress={() => {}} />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.bg,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  heroContainer: {
+    overflow: 'hidden',
+  },
+  heroGradient: {
+    minHeight: height * 0.55,
+  },
+  heroContent: {
+    paddingHorizontal: SPACING.md,
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  logoIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '800',
+  },
+  logoNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  logoName: {
+    color: COLORS.text,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  logoSlogan: {
+    color: COLORS.textSecondary,
+    fontSize: 11,
+  },
+  notifButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.bgCard,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notifDot: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.secondary,
+  },
+  hero3dContainer: {
+    height: 160,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+    position: 'relative',
+  },
+  hero3dBg: {
+    position: 'absolute',
+    top: 0,
+    left: -SPACING.md,
+    right: -SPACING.md,
+    height: '100%',
+    borderRadius: 30,
+  },
+  houseIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    overflow: 'hidden',
+    ...SHADOWS.glow,
+  },
+  houseIconGradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  particle: {
+    position: 'absolute',
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: 50,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.bgCard,
+    borderRadius: RADIUS.full,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 14,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: COLORS.glassBorder,
+    marginBottom: SPACING.md,
+  },
+  searchPlaceholder: {
+    color: COLORS.textTertiary,
+    fontSize: 15,
+    flex: 1,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  quickAction: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.bgCard,
+    borderRadius: RADIUS.md,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: COLORS.glassBorder,
+  },
+  quickActionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickActionText: {
+    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontWeight: '500',
+  },
+
+  section: {
+    paddingHorizontal: SPACING.md,
+    marginBottom: SPACING.lg,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
+  sectionTitle: {
+    ...FONTS.h3,
+    color: COLORS.text,
+  },
+  seeAll: {
+    color: COLORS.primaryLight,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  propertiesScroll: {
+    gap: 12,
+    paddingRight: SPACING.md,
+  },
+  propertyCard: {
+    width: 280,
+  },
+  propertyImage: {
+    width: '100%',
+    height: 160,
+    borderTopLeftRadius: RADIUS.lg,
+    borderTopRightRadius: RADIUS.lg,
+  },
+  propertyInfo: {
+    padding: SPACING.sm,
+  },
+  propertyTitle: {
+    color: COLORS.text,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  propertyPrice: {
+    color: COLORS.accent,
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  propertyMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  propertyMetaText: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+  },
+  propertyLocation: {
+    color: COLORS.textTertiary,
+    fontSize: 11,
+  },
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  // Suggest a Feature
+  suggestFeatureBanner: {
+    borderRadius: RADIUS.md,
+    overflow: 'hidden',
+  },
+  suggestFeatureBannerGrad: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 184, 77, 0.2)',
+  },
+  suggestFeatureIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 184, 77, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  suggestFeatureTextContent: {
+    flex: 1,
+  },
+  suggestFeatureTitle: {
+    color: COLORS.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  suggestFeatureDesc: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    marginTop: 1,
+  },
+  earlyAccessEngagement: {
+    gap: 12,
+  },
+  neighborhoodScroll: {
+    gap: 12,
+    paddingRight: SPACING.md,
+  },
+  neighborhoodCard: {
+    width: 200,
+    height: 140,
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+  },
+  neighborhoodImage: {
+    width: '100%',
+    height: '100%',
+  },
+  neighborhoodOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: SPACING.sm,
+  },
+  neighborhoodName: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  neighborhoodRating: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+    marginTop: 2,
+  },
+
+  // Footer
+  footer: {
+    alignItems: 'center',
+    paddingVertical: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.06)',
+    marginHorizontal: SPACING.md,
+  },
+  footerText: {
+    color: COLORS.textTertiary,
+    fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: SPACING.sm,
+  },
+  socialRow: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: SPACING.sm,
+  },
+  socialButton: {
+    width: 54,
+    height: 54,
+    borderRadius: 16,
+    overflow: 'hidden',
+    ...SHADOWS.glow,
+  },
+  socialGradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tiktokButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#010101',
+    borderRadius: 16,
+  },
+  footerHandle: {
+    color: COLORS.text,
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  footerTagline: {
+    color: COLORS.textTertiary,
+    fontSize: 12,
+  },
+});

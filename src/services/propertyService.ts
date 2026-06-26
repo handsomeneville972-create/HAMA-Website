@@ -1,0 +1,176 @@
+/**
+ * HAMA Property Service
+ *
+ * Queries properties, property images, amenities, property reviews,
+ * and neighborhoods from Supabase. Falls back to mock data.
+ */
+
+import { supabase } from '../utils/supabaseClient';
+import { executeQuery } from './supabaseService';
+import { MOCK_PROPERTIES, MOCK_PROPERTY_REVIEWS, MOCK_NEIGHBORHOODS } from '../constants/data';
+import type { Property, PropertyReview, Neighborhood } from '../constants/types';
+
+// ============ PROPERTIES ============
+
+export async function getProperties(params?: {
+  landlordId?: string;
+  available?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  location?: string;
+  furnished?: boolean;
+  limit?: number;
+}): Promise<{ data: Property[] | null; error: string | null }> {
+  return executeQuery<Property[]>(
+    async () => {
+      let query = supabase
+        .from('properties')
+        .select('*, landlord:landlord_id(*, profile:profiles!landlord_id(*))');
+
+      if (params?.landlordId) {
+        query = query.eq('landlord_id', params.landlordId);
+      }
+      if (params?.available !== undefined) {
+        query = query.eq('available', params.available);
+      }
+      if (params?.minPrice !== undefined) {
+        query = query.gte('price', params.minPrice);
+      }
+      if (params?.maxPrice !== undefined) {
+        query = query.lte('price', params.maxPrice);
+      }
+      if (params?.location) {
+        query = query.ilike('location', `%${params.location}%`);
+      }
+      if (params?.furnished !== undefined) {
+        query = query.eq('furnished', params.furnished);
+      }
+
+      query = query.order('created_at', { ascending: false });
+
+      if (params?.limit) {
+        query = query.limit(params.limit);
+      }
+
+      const { data, error } = await query;
+      return { data: data as unknown as Property[] | null, error };
+    },
+    MOCK_PROPERTIES,
+  );
+}
+
+export async function getPropertyById(id: string): Promise<{ data: Property | null; error: string | null }> {
+  return executeQuery<Property>(
+    async () => {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*, landlord:landlord_id(*, profile:profiles!landlord_id(*)), amenities:property_amenities(*)')
+        .eq('id', id)
+        .single();
+      return { data: data as unknown as Property | null, error };
+    },
+    MOCK_PROPERTIES.find(p => p.id === id) ?? MOCK_PROPERTIES[0],
+  );
+}
+
+export async function searchProperties(
+  query: string,
+): Promise<{ data: Property[] | null; error: string | null }> {
+  const searchLower = query.toLowerCase();
+  return executeQuery<Property[]>(
+    async () => {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*, landlord:landlord_id(*)')
+        .or(`title.ilike.%${searchLower}%,description.ilike.%${searchLower}%,location.ilike.%${searchLower}%`)
+        .order('created_at', { ascending: false });
+      return { data: data as unknown as Property[] | null, error };
+    },
+    MOCK_PROPERTIES.filter(
+      p => p.title.toLowerCase().includes(searchLower) ||
+           p.location.toLowerCase().includes(searchLower) ||
+           p.description.toLowerCase().includes(searchLower),
+    ),
+  );
+}
+
+// ============ PROPERTY REVIEWS ============
+
+export async function getPropertyReviews(
+  propertyId: string,
+): Promise<{ data: PropertyReview[] | null; error: string | null }> {
+  return executeQuery<PropertyReview[]>(
+    async () => {
+      const { data, error } = await supabase
+        .from('property_reviews')
+        .select('*, user:user_id(*)')
+        .eq('property_id', propertyId)
+        .order('created_at', { ascending: false });
+      return { data: data as unknown as PropertyReview[] | null, error };
+    },
+    MOCK_PROPERTY_REVIEWS.filter(r => r.propertyId === propertyId),
+  );
+}
+
+export async function createPropertyReview(review: {
+  propertyId: string;
+  userId: string;
+  rating: number;
+  security?: number;
+  cleanliness?: number;
+  accessibility?: number;
+  amenities?: number;
+  valueForMoney?: number;
+  content: string;
+}): Promise<{ data: any; error: string | null }> {
+  return executeQuery(
+    async () => {
+      const { data, error } = await supabase
+        .from('property_reviews')
+        .insert({
+          property_id: review.propertyId,
+          user_id: review.userId,
+          rating: review.rating,
+          security_rating: review.security,
+          cleanliness_rating: review.cleanliness,
+          accessibility_rating: review.accessibility,
+          amenities_rating: review.amenities,
+          value_rating: review.valueForMoney,
+          content: review.content,
+        })
+        .select()
+        .single();
+      return { data, error };
+    },
+    null,
+  );
+}
+
+// ============ NEIGHBORHOODS ============
+
+export async function getNeighborhoods(): Promise<{ data: Neighborhood[] | null; error: string | null }> {
+  return executeQuery<Neighborhood[]>(
+    async () => {
+      const { data, error } = await supabase
+        .from('neighborhoods')
+        .select('*')
+        .order('rating', { ascending: false });
+      return { data: data as Neighborhood[] | null, error };
+    },
+    MOCK_NEIGHBORHOODS,
+  );
+}
+
+export async function getNeighborhoodById(id: string): Promise<{ data: Neighborhood | null; error: string | null }> {
+  return executeQuery<Neighborhood>(
+    async () => {
+      const { data, error } = await supabase
+        .from('neighborhoods')
+        .select('*')
+        .eq('id', id)
+        .single();
+      return { data: data as Neighborhood | null, error };
+    },
+    MOCK_NEIGHBORHOODS.find(n => n.id === id) ?? MOCK_NEIGHBORHOODS[0],
+  );
+}

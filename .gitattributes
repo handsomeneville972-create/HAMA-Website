@@ -1,0 +1,57 @@
+# ============================================================
+# HAMA — Git Attributes
+# Normalizes line endings and ensures consistent behavior
+# across Windows, macOS, and Linux contributors.
+# ============================================================
+
+# Auto-detect text files and normalize to LF
+* text=auto
+
+# JavaScript/TypeScript source files
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+
+# Styles and config
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+
+# Shell scripts — must stay LF
+*.sh text eol=lf
+*.bash text eol=lf
+
+# SQL files
+*.sql text eol=lf
+
+# Environment examples (safe to track)
+.env.example text eol=lf
+
+# Binary files — never diff
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.pdf binary
+*.keystore binary
+*.jks binary
+*.hprof binary
+*.apk binary
+*.aab binary
+
+# Lockfile — track as-is
+package-lock.json text eol=lf

@@ -1,0 +1,111 @@
+# CODEOWNERS — Auto-assign reviewers on pull requests
+#
+# Syntax:
+#   pattern @user @team
+# Patterns are matched from most-specific to least-specific.
+# The last matching pattern takes precedence for each file.
+#
+# Replace placeholder teams (@hama-core, @hama-frontend, etc.)
+# with actual GitHub usernames or team names.
+
+# ============================================================
+#  REPOSITORY DEFAULTS
+# ============================================================
+
+# Default owner for all files in the repo
+* @hama-core
+
+# ============================================================
+#  ROOT CONFIGURATION
+# ============================================================
+
+# Project dependencies
+package.json                        @hama-core
+package-lock.json                   @hama-core
+server/package.json                 @hama-core
+
+# Build & tooling config
+app.json                            @hama-core
+app.config.js                       @hama-core
+babel.config.js                     @hama-core
+tsconfig.json                       @hama-core
+jest.config.js                      @hama-core
+
+# Project documentation
+README.md                           @hama-core
+CONTRIBUTING.md                     @hama-core
+SECURITY.md                         @hama-core
+LICENSE                             @hama-core
+.gitignore                          @hama-core
+.gitattributes                      @hama-core
+
+# ============================================================
+#  GITHUB CONFIGURATION
+# ============================================================
+
+.github/workflows/                  @hama-core
+.github/CODEOWNERS                  @hama-core
+
+# ============================================================
+#  MOBILE APP — FRONTEND
+# ============================================================
+
+# Expo Router pages & navigation
+app/                                @hama-frontend
+
+# Screen components
+src/screens/                        @hama-frontend
+
+# Reusable UI components
+src/components/                     @hama-frontend
+
+# Theme, types, constants
+src/constants/                      @hama-frontend
+
+# Custom React hooks
+src/hooks/                          @hama-frontend
+
+# ============================================================
+#  MOBILE APP — STATE & DATA
+# ============================================================
+
+# React contexts (auth, early access, etc.)
+src/contexts/                       @hama-frontend
+
+# API & service layer
+src/services/                       @hama-backend
+
+# Supabase client & utils
+src/utils/supabaseClient.ts         @hama-backend
+src/utils/                          @hama-frontend
+
+# Shared libraries
+src/lib/                            @hama-core
+
+# App config & feature flags
+src/config/                         @hama-core
+
+# ============================================================
+#  SERVER — PAYMENT INTEGRATIONS
+# ============================================================
+
+# Node.js server (Paystack, Stripe, M-Pesa)
+server/src/                         @hama-backend
+server/src/paystack.js              @hama-payments
+server/src/stripe.js                @hama-payments
+server/src/mpesa.js                 @hama-payments
+server/__tests__/                   @hama-backend
+
+# ============================================================
+#  DATABASE — SUPABASE MIGRATIONS
+# ============================================================
+
+# SQL schema migrations
+supabase/migrations/                @hama-backend
+
+# ============================================================
+#  TESTS
+# ============================================================
+
+# App-side tests
+src/utils/__tests__/                @hama-frontend @hama-backend

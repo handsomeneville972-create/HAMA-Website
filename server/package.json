@@ -1,0 +1,21 @@
+{
+  "name": "hama-mpesa-server",
+  "version": "1.0.0",
+  "description": "M-Pesa Daraja API STK Push backend for HAMA app",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "jest --detectOpenHandles"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^2.7.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

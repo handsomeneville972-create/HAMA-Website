@@ -1,0 +1,134 @@
+# ============================================================
+# HAMA™ — Continuous Integration
+#
+# Runs on every push to main and every pull request:
+#   - TypeScript type-check
+#   - Lint check (if linter is configured)
+#   - Run tests (Jest)
+#   - Expo config validation
+#   - Dependency audit
+# ============================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================
+  # JOB: Quality — typecheck, lint, test
+  # ============================================================
+  quality:
+    name: TypeScript & Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      SUPABASE_URL: https://placeholder-project.supabase.co
+      SUPABASE_ANON_KEY: placeholder-anon-key
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache TypeScript
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/typescript
+          key: tsc-${{ runner.os }}-${{ hashFiles('tsconfig.json', 'package-lock.json') }}
+          restore-keys: tsc-${{ runner.os }}-
+
+      - name: TypeScript check
+        run: npx tsc --noEmit --pretty
+
+      - name: Lint check
+        run: |
+          if test -n "$(find . -maxdepth 1 -name '.eslintrc*' -print -quit 2>/dev/null)"; then
+            echo "Running ESLint..."
+            npx eslint . --max-warnings=0
+          else
+            echo "No linter configured — skipping lint"
+          fi
+
+      - name: Cache Jest
+        uses: actions/cache@v4
+        with:
+          path: .cache/jest
+          key: jest-${{ runner.os }}-${{ hashFiles('package-lock.json', 'jest.config.*') }}
+          restore-keys: jest-${{ runner.os }}-
+
+      - name: Run tests
+        run: npm test -- --ci --cacheDirectory .cache/jest
+
+  # ============================================================
+  # JOB: Config — validate Expo app config resolves correctly
+  # ============================================================
+  config:
+    name: Expo Config
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      SUPABASE_URL: https://placeholder-project.supabase.co
+      SUPABASE_ANON_KEY: placeholder-anon-key
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Expo config
+        run: npx expo config --type public
+
+  # ============================================================
+  # JOB: Audit — dependency vulnerability scan
+  # ============================================================
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit for vulnerabilities
+        run: npm audit --audit-level=high
+        continue-on-error: true
