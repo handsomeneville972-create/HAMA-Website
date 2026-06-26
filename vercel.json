@@ -2,12 +2,20 @@
   "framework": null,
   "buildCommand": "npx expo export --platform web",
   "outputDirectory": "dist",
-  "installCommand": "npm install --ignore-scripts",
+  "installCommand": "npm install",
   "env": {
     "SUPABASE_URL": "@supabase-url",
     "SUPABASE_ANON_KEY": "@supabase-anon-key"
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
   ]
 }
