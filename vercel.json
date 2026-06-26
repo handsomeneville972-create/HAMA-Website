@@ -1,0 +1,13 @@
+{
+  "framework": null,
+  "buildCommand": "npx expo export --platform web",
+  "outputDirectory": "dist",
+  "installCommand": "npm install --ignore-scripts",
+  "env": {
+    "SUPABASE_URL": "@supabase-url",
+    "SUPABASE_ANON_KEY": "@supabase-anon-key"
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
