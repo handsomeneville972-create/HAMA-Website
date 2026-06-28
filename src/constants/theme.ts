@@ -42,7 +42,7 @@ export const COLORS = {
   success: '#00D4AA',
   warning: '#FFB84D',
   error: '#FF4D6A',
-  info: '#4DB8FF',
+  info: '#FF8A33',
 
   // Glass
   glassBorder: 'rgba(255, 255, 255, 0.1)',

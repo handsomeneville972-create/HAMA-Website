@@ -61,7 +61,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <LinearGradient
-          colors={['rgba(10,10,15,0.95)', 'rgba(26,26,46,0.98)']}
+          colors={['rgba(0,0,0,0.95)', 'rgba(0,0,0,0.98)']}
           style={styles.container}
         >
           {/* Sending / Initializing */}
@@ -171,7 +171,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {step === 'error' && (
             <View style={styles.content}>
               <View style={[styles.iconContainer, styles.errorIcon]}>
-                <Ionicons name="close-circle" size={64} color="#FF4444" />
+                <Ionicons name="close-circle" size={64} color="#FF4D6A" />
               </View>
               <Text style={styles.title}>Payment Failed</Text>
               <Text style={styles.subtitle}>
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   successIcon: {
-    backgroundColor: 'rgba(0,200,83,0.1)',
+    backgroundColor: 'rgba(0,212,170,0.1)',
   },
   errorIcon: {
     backgroundColor: 'rgba(255,68,68,0.1)',
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   receiptBox: {
-    backgroundColor: 'rgba(0,200,83,0.1)',
+    backgroundColor: 'rgba(0,212,170,0.1)',
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     alignItems: 'center',

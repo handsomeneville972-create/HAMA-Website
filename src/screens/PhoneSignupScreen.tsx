@@ -409,11 +409,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    backgroundColor: 'rgba(0, 212, 170, 0.1)',
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: 'rgba(76, 175, 80, 0.25)',
+    borderColor: 'rgba(0, 212, 170, 0.25)',
   },
   successText: {
     color: COLORS.success,

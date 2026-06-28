@@ -307,7 +307,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               accessibilityLabel="Follow us on Instagram"
             >
               <LinearGradient
-                colors={['#833AB4', '#FD1D1D', '#F77737', '#FCAF45']}
+                colors={['#FF6B00', '#FF8A33', '#FFB366', '#FFB84D']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.socialGradient}

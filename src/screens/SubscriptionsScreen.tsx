@@ -286,7 +286,7 @@ export const SubscriptionsScreen: React.FC<{ navigation: any }> = ({ navigation 
       {showPaymentSheet && selectedPlan && !isPaying && (
         <View style={styles.paymentOverlay}>
           <LinearGradient
-            colors={['rgba(10,10,15,0.98)', 'rgba(26,26,46,0.99)']}
+            colors={['rgba(0,0,0,0.98)', 'rgba(0,0,0,0.99)']}
             style={styles.paymentSheet}
           >
             <TouchableOpacity style={styles.paymentClose} onPress={closeAll}>
@@ -341,7 +341,7 @@ export const SubscriptionsScreen: React.FC<{ navigation: any }> = ({ navigation 
                   style={styles.methodCard}
                   onPress={() => setPaymentMethod('stripe')}
                 >
-                  <View style={[styles.methodIcon, { backgroundColor: 'rgba(99,102,241,0.15)' }]}>
+                  <View style={[styles.methodIcon, { backgroundColor: 'rgba(255,107,0,0.15)' }]}>
                     <Ionicons name="logo-usd" size={24} color={COLORS.info} />
                   </View>
                   <View style={styles.methodInfo}>
@@ -449,7 +449,7 @@ export const SubscriptionsScreen: React.FC<{ navigation: any }> = ({ navigation 
                       }}
                     >
                       <LinearGradient
-                        colors={['#6366F1', '#818CF8']}
+                        colors={['#FF6B00', '#FF8A33']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={styles.payButtonGradient}
@@ -506,7 +506,7 @@ export const SubscriptionsScreen: React.FC<{ navigation: any }> = ({ navigation 
                       }}
                     >
                       <LinearGradient
-                        colors={['#00D4AA', '#33DDBB']}
+                        colors={['#00D4AA', '#00D4AA']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={styles.payButtonGradient}

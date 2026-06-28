@@ -76,7 +76,7 @@ export const PaystackWebView: React.FC<PaystackWebViewProps> = ({
       <View style={styles.container}>
         {/* Header */}
         <LinearGradient
-          colors={['rgba(10,10,15,0.98)', 'rgba(26,26,46,0.99)']}
+          colors={['rgba(0,0,0,0.98)', 'rgba(0,0,0,0.99)']}
           style={styles.header}
         >
           <View style={styles.headerContent}>
@@ -125,7 +125,7 @@ export const PaystackWebView: React.FC<PaystackWebViewProps> = ({
             {loading && (
               <View style={styles.initialLoading}>
                 <LinearGradient
-                  colors={['rgba(10,10,15,0.95)', 'rgba(26,26,46,0.98)']}
+                  colors={['rgba(0,0,0,0.95)', 'rgba(0,0,0,0.98)']}
                   style={styles.initialLoadingContent}
                 >
                   <ActivityIndicator size="large" color={COLORS.primary} />

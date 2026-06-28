@@ -14,8 +14,8 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 export const VERIFICATION_LABELS: Record<string, { label: string; icon: string; color: string }> = {
   unverified: { label: 'Unverified', icon: 'close-circle-outline', color: '#FF4D6A' },
   email: { label: 'Email Verified', icon: 'mail-outline', color: '#00D4AA' },
-  phone: { label: 'Phone Verified', icon: 'call-outline', color: '#4DB8FF' },
+  phone: { label: 'Phone Verified', icon: 'call-outline', color: '#FF8A33' },
   id: { label: 'ID Verified', icon: 'id-card-outline', color: '#FFB84D' },
-  business: { label: 'Business Verified', icon: 'business-outline', color: '#6C63FF' },
+  business: { label: 'Business Verified', icon: 'business-outline', color: '#FF6B00' },
   full: { label: 'Fully Verified', icon: 'shield-checkmark-outline', color: '#00D4AA' },
 };

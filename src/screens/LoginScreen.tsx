@@ -20,6 +20,7 @@ import { sanitizeInput } from '../utils/sanitize';
 import { validatePassword, PASSWORD_REQUIREMENTS } from '../utils/validation';
 import { COLORS, RADIUS, SPACING, FONTS, SHADOWS } from '../constants/theme';
 import { BlurText, FadeInView } from '../components/BlurText';
+import { LiquidGlass, LiquidInput } from '../components/LiquidGlass';
 
 const BG_IMAGE = require('../../assets/login-bg.jpg');
 
@@ -228,7 +229,6 @@ export const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                         )}
                       </View>
                       <Text style={styles.hintText}>Include country code (e.g. +254 for Kenya)</Text>
-                    </>
                   ) : (
                     <>
                       <Text style={styles.formTitle}>Enter the 6-digit code</Text>
@@ -511,13 +511,14 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: RADIUS.md,
     paddingHorizontal: 14,
     paddingVertical: 12,
     gap: 10,
     borderWidth: 1,
-    borderColor: COLORS.glassBorder,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    overflow: 'hidden',
   },
   input: {
     flex: 1,

@@ -8,7 +8,6 @@ interface GlassCardProps {
   style?: ViewStyle;
   onPress?: () => void;
   gradient?: readonly [string, string];
-  blur?: boolean;
   elevated?: boolean;
   noPadding?: boolean;
 }
@@ -42,9 +41,10 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   };
 
   const cardContent = (
-    <Animated.View style={[{ transform: [{ scale: scaleAnim }] }, onPress ? undefined : undefined]}>
+    <Animated.View style={[{ transform: [{ scale: scaleAnim }] }]}>
       <View style={[styles.card, elevated && styles.elevated, style]}>
         <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.gradient}>
+          <View style={styles.topHighlight} />
           <View style={[styles.content, noPadding ? undefined : styles.padded]}>
             {children}
           </View>
@@ -74,14 +74,25 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: COLORS.glassBorder,
-    backgroundColor: COLORS.bgCard,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     ...SHADOWS.sm,
   },
   elevated: {
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     ...SHADOWS.md,
   },
   gradient: {
+    borderRadius: RADIUS.lg,
+    position: 'relative',
+  },
+  topHighlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: RADIUS.lg,
   },
   content: {

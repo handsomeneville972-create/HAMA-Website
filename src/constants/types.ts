@@ -524,16 +524,16 @@ export const FEATURE_REQUEST_CATEGORIES: { key: FeatureRequestCategory; label: s
 export const FEATURE_REQUEST_PRIORITIES: { key: FeatureRequestPriority; label: string; color: string }[] = [
   { key: 'low', label: 'Nice to Have', color: '#8E8E93' },
   { key: 'medium', label: 'Important', color: '#FFB84D' },
-  { key: 'high', label: 'Very Important', color: '#FF6B4A' },
-  { key: 'critical', label: 'Critical', color: '#FF2D55' },
+  { key: 'high', label: 'Very Important', color: '#FF6B00' },
+  { key: 'critical', label: 'Critical', color: '#FF4D6A' },
 ];
 
 /** Lookup data for feature request statuses */
 export const FEATURE_REQUEST_STATUSES: { key: FeatureRequestStatus; label: string; color: string }[] = [
-  { key: 'planned', label: 'Planned', color: '#6C63FF' },
+  { key: 'planned', label: 'Planned', color: '#FF8A33' },
   { key: 'in_development', label: 'In Development', color: '#FFB84D' },
   { key: 'testing', label: 'Testing', color: '#00D4AA' },
-  { key: 'released', label: 'Released', color: '#34C759' },
+  { key: 'released', label: 'Released', color: '#00D4AA' },
   { key: 'declined', label: 'Declined', color: '#8E8E93' },
 ];
 
