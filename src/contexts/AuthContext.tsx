@@ -5,7 +5,6 @@
  * - Email/password authentication
  * - Session persistence with auto-refresh
  * - Email verification support
- * - Phone OTP support (future)
  * - Multi-device logout capability
  * - Audit logging for security events
  * - Strong password enforcement
@@ -66,10 +65,6 @@ interface AuthContextType {
   exportData: () => Promise<void>;
   /** Log out from all active sessions */
   signOutAllDevices: () => Promise<void>;
-  /** Send phone OTP for verification */
-  sendPhoneOTP: (phone: string) => Promise<void>;
-  /** Verify phone OTP (phone param needed for signup) */
-  verifyPhoneOTP: (token: string, phone?: string) => Promise<void>;
 }
 
 // ---------- Constants ----------
@@ -455,91 +450,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [currentUserId]);
 
-  // ---------- Phone OTP ----------
-
-  const sendPhoneOTP = useCallback(async (phone: string) => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithOtp({
-        phone,
-        options: {
-          data: {
-            phone,
-            role: 'seeker',
-            display_name: 'User',
-          },
-        },
-      });
-
-      if (error) {
-        if (error.message?.includes('phone_provider_disabled') || error.message?.includes('Unsupported phone provider')) {
-          throw new Error('phone_provider_disabled');
-        }
-        throw error;
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const verifyPhoneOTP = useCallback(async (token: string, phoneOverride?: string) => {
-    const targetPhone = phoneOverride || session?.user?.phone || '';
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        type: 'sms',
-        phone: targetPhone,
-        token,
-      });
-
-      if (error) throw error;
-
-      // After successful OTP verify, a session is created via onAuthStateChange.
-      // Ensure a profile row exists for new phone users.
-      if (data?.user) {
-        const userId = data.user.id;
-
-        const { data: existingProfile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', userId)
-          .maybeSingle();
-
-        if (!existingProfile) {
-          const { error: profileError } = await supabase.from('profiles').upsert({
-            id: userId,
-            display_name: data.user.user_metadata?.display_name ?? 'User',
-            email: data.user.email ?? null,
-            phone: targetPhone,
-            phone_verified: true,
-            role: 'seeker',
-            verification_level: 'unverified',
-            created_at: new Date().toISOString(),
-          }, { onConflict: 'id' });
-
-          if (profileError) {
-            console.error('[Auth] Failed to create phone user profile:', profileError.message);
-          }
-        } else {
-          // Mark phone as verified for existing users
-          await supabase.from('profiles').upsert({
-            id: userId,
-            phone: targetPhone,
-            phone_verified: true,
-          }, { onConflict: 'id' });
-        }
-
-        await logAuditEvent({
-          event_type: 'phone_login',
-          user_id: userId,
-          severity: 'info',
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [session]);
-
   // ---------- Render ----------
 
   return (
@@ -561,8 +471,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         deleteAccount,
         exportData,
         signOutAllDevices,
-        sendPhoneOTP,
-        verifyPhoneOTP,
       }}
     >
       {children}

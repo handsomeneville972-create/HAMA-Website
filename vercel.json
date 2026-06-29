@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "buildCommand": "npx expo export --platform web && cp -r public/* dist/ 2>/dev/null || true",
+  "buildCommand": "CI=1 npx expo export --platform web",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "env": {

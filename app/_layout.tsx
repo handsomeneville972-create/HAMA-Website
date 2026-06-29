@@ -232,13 +232,6 @@ export default function RootLayout() {
                     }}
                   />
                   <Stack.Screen
-                    name="PhoneSignup"
-                    options={{
-                      headerShown: false,
-                      animation: 'slide_from_right',
-                    }}
-                  />
-                  <Stack.Screen
                     name="auth/callback"
                     options={{
                       headerShown: false,

@@ -7,7 +7,6 @@ export default function LoginPage() {
     goBack: () => router.back(),
     navigate: (route: string) => {
       if (route === 'ForgotPassword') router.push('/ForgotPassword');
-      if (route === 'PhoneSignup') router.push('/PhoneSignup');
     },
   };
 
