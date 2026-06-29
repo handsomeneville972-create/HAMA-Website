@@ -229,6 +229,7 @@ export const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                         )}
                       </View>
                       <Text style={styles.hintText}>Include country code (e.g. +254 for Kenya)</Text>
+                    </>
                   ) : (
                     <>
                       <Text style={styles.formTitle}>Enter the 6-digit code</Text>

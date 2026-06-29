@@ -146,7 +146,7 @@ export const ProfileScreen: React.FC = () => {
           {MENU_SECTIONS.map((section, sectionIndex) => (
             <View key={sectionIndex} style={styles.menuSection}>
               <Text style={styles.menuSectionTitle}>{section.title}</Text>
-              <GlassCard noPadding blur>
+              <GlassCard noPadding>
                 {section.items.map((item, itemIndex) => {
                   const badgeText = (item as any).badgeKey
                     ? dynamicBadges[(item as any).badgeKey]

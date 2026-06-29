@@ -34,6 +34,7 @@ export type AuditEventType =
   | 'property.updated'
   | 'subscription.purchased'
   | 'subscription.cancelled'
+  | 'phone_login'
   | 'session.revoked_all'
   | 'suspicious_activity.detected';
 

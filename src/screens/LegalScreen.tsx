@@ -30,7 +30,7 @@ const LEGAL_TABS: { key: LegalPage; label: string }[] = [
   { key: 'acceptable-use', label: 'Acceptable Use' },
 ];
 
-const LEGAL_CONTENT: Record<LegalPage, { title: string; sections: { heading: string; body: string }[] }> = {
+const LEGAL_CONTENT: Record<LegalPage, { title: string; hostedUrl?: string; sections: { heading: string; body: string }[] }> = {
   terms: {
     title: 'Terms of Service',
     hostedUrl: `${HOSTED_BASE}/terms.html`,
@@ -218,7 +218,7 @@ export const LegalScreen: React.FC<LegalScreenProps> = ({ navigation, initialPag
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.pageTitle}>{content.title}</Text>
         {'hostedUrl' in content && content.hostedUrl && (
-          <TouchableOpacity style={styles.onlineLink} onPress={() => Linking.openURL(content.hostedUrl)}>
+          <TouchableOpacity style={styles.onlineLink} onPress={() => Linking.openURL(content.hostedUrl!)}>
             <Ionicons name="open-outline" size={16} color={COLORS.primary} />
             <Text style={styles.onlineLinkText}>View Full Policy Online</Text>
           </TouchableOpacity>
