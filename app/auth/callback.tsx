@@ -40,7 +40,7 @@ export default function AuthCallback() {
         setMessage('Email verified! Redirecting...');
 
         setTimeout(() => {
-          router.replace('/(tabs)/home');
+          router.replace('/(tabs)');
         }, 1500);
       } catch {
         setStatus('error');

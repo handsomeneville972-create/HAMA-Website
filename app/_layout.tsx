@@ -35,7 +35,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
       router.replace('/Login');
     } else if (isAuthenticated && isOnAuthScreen) {
       // Authenticated users don't need login
-      router.replace('/(tabs)/home');
+      router.replace('/(tabs)');
     }
   }, [isAuthenticated, isLoading, segments, router]);
 
