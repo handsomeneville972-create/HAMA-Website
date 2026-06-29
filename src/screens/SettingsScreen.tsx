@@ -24,7 +24,7 @@ type SettingsItem = {
   onPress?: () => void;
 };
 
-const createSettingsSections = (showFeatureRequest: () => void): { title: string; items: SettingsItem[] }[] => [
+const createSettingsSections = (showFeatureRequest: () => void, navigation?: any): { title: string; items: SettingsItem[] }[] => [
   {
     title: 'Notifications',
     items: [
@@ -58,8 +58,8 @@ const createSettingsSections = (showFeatureRequest: () => void): { title: string
       { icon: 'bulb-outline', label: 'Suggest a Feature', onPress: () => showFeatureRequest(), color: COLORS.warning },
       { icon: 'help-circle-outline', label: 'Help Center', type: 'link', color: COLORS.primary },
       { icon: 'chatbubble-ellipses-outline', label: 'Contact Support', type: 'link', color: COLORS.accent },
-      { icon: 'document-text-outline', label: 'Terms of Service', type: 'link', color: COLORS.textSecondary },
-      { icon: 'shield-outline', label: 'Privacy Policy', type: 'link', color: COLORS.textSecondary },
+      { icon: 'document-text-outline', label: 'Terms of Service', type: 'link', color: COLORS.textSecondary, onPress: () => navigation?.navigate('Legal', { initialPage: 'terms' }) },
+      { icon: 'shield-outline', label: 'Privacy Policy', type: 'link', color: COLORS.textSecondary, onPress: () => navigation?.navigate('Legal', { initialPage: 'privacy' }) },
     ],
   },
 ];
@@ -144,7 +144,7 @@ export const SettingsScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       </LinearGradient>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {createSettingsSections(showFeatureRequest).map((section, si) => (
+        {createSettingsSections(showFeatureRequest, navigation).map((section, si) => (
           <View key={si} style={styles.section}>
             <Text style={styles.sectionTitle}>{section.title}</Text>
             <GlassCard noPadding>

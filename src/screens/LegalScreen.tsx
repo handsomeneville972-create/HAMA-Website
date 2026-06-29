@@ -8,13 +8,15 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, RADIUS, SPACING, FONTS } from '../constants/theme';
 
 type LegalPage = 'terms' | 'privacy' | 'cookies' | 'acceptable-use';
+
+const HOSTED_BASE = 'https://hama-website-eta.vercel.app';
 
 interface LegalScreenProps {
   navigation?: any;
@@ -31,71 +33,101 @@ const LEGAL_TABS: { key: LegalPage; label: string }[] = [
 const LEGAL_CONTENT: Record<LegalPage, { title: string; sections: { heading: string; body: string }[] }> = {
   terms: {
     title: 'Terms of Service',
+    hostedUrl: `${HOSTED_BASE}/terms.html`,
     sections: [
       {
         heading: '1. Acceptance of Terms',
-        body: 'By accessing or using HAMA™ ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the Platform. These terms apply to all visitors, users, and others who access or use the Platform.',
+        body: 'By accessing or using HAMA ("the Platform"), you agree to be bound by these Terms of Service. You must be at least 18 years old to use the Platform. If you do not agree, please do not use the Platform.',
       },
       {
-        heading: '2. Early Access Program',
-        body: 'HAMA™ is currently operating in an Early Access phase. During this period, premium features are provided complimentary to Founding Members. This access is limited in time and may be modified or terminated at our discretion. We reserve the right to transition to a paid subscription model at any time with reasonable notice to users.',
+        heading: '2. Description of Service',
+        body: 'HAMA is a housing and marketplace platform connecting property seekers with landlords, sellers, service providers, and communities. The Platform enables property listings, product buying/selling, service provider discovery, community features, and payment management.',
       },
       {
         heading: '3. User Accounts',
-        body: 'You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account. You must provide accurate and complete information when creating an account.',
+        body: 'You must create an account to use certain features. You are responsible for maintaining account security and for all activities under your account. You must provide accurate information and notify us of any unauthorized use.',
       },
       {
         heading: '4. User Conduct',
-        body: 'You agree not to use the Platform for any unlawful purpose or in violation of these terms. Prohibited activities include: impersonating others, posting false or misleading information, engaging in harassment or abuse, attempting to breach platform security, and using automated tools to scrape or manipulate data.',
+        body: 'You agree not to use the Platform for unlawful purposes, post false or misleading information, impersonate others, harass users, manipulate listings or reviews, attempt to breach security, use automated scraping tools, or violate applicable laws.',
       },
       {
-        heading: '5. Intellectual Property',
-        body: 'The Platform and its original content, features, and functionality are owned by HAMA™ and are protected by international copyright, trademark, and other intellectual property laws. You may not modify, reproduce, distribute, or create derivative works without our explicit written consent.',
+        heading: '5. Listings and Transactions',
+        body: 'Users who post listings are solely responsible for the accuracy and legality of their content. HAMA does not guarantee listing quality, safety, legality, or the ability of users to complete transactions. All transactions are at users\' own risk.',
       },
       {
-        heading: '6. Limitation of Liability',
-        body: 'HAMA™ shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Platform. The Platform is provided "as is" without warranty of any kind, either express or implied.',
+        heading: '6. Payments',
+        body: 'Premium features and transactions may require payment processed through Stripe, Paystack, or M-Pesa. HAMA does not store full payment card details. All payments are subject to the applicable payment processor\'s terms.',
       },
       {
-        heading: '7. Changes to Terms',
-        body: 'We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting to the Platform. Your continued use of the Platform after changes constitutes acceptance of the new terms.',
+        heading: '7. Early Access Program',
+        body: 'HAMA is currently in Early Access. Premium features may be provided complimentary to Founding Members. This access is temporary and may be modified or discontinued with reasonable notice.',
       },
       {
-        heading: '8. Contact',
-        body: 'For questions about these terms, please contact us through the Platform support channels or email support@hama.app.',
+        heading: '8. Intellectual Property',
+        body: 'The Platform is owned by HAMA and protected by intellectual property laws. You retain ownership of content you post but grant HAMA a worldwide, non-exclusive, royalty-free license to display and promote your content on the Platform.',
+      },
+      {
+        heading: '9. Limitation of Liability',
+        body: 'HAMA shall not be liable for any indirect, incidental, special, consequential, or punitive damages. The Platform is provided "as is" without warranties of any kind, either express or implied.',
+      },
+      {
+        heading: '10. Termination',
+        body: 'We may suspend or terminate your account for violations of these Terms or at our discretion. Upon termination, your right to use the Platform ceases immediately.',
+      },
+      {
+        heading: '11. Changes to Terms',
+        body: 'We reserve the right to modify these Terms at any time. Material changes will be communicated through the Platform. Your continued use after changes take effect constitutes acceptance.',
+      },
+      {
+        heading: '12. Contact',
+        body: 'For questions about these Terms, contact us at legal@hama.app or support@hama.app.',
       },
     ],
   },
   privacy: {
     title: 'Privacy Policy',
+    hostedUrl: `${HOSTED_BASE}/privacy.html`,
     sections: [
       {
         heading: '1. Information We Collect',
-        body: 'We collect information you provide directly: name, email address, phone number, profile information, and any content you post on the Platform. We also automatically collect usage data, device information, and analytics to improve our services.',
+        body: 'We collect information you provide directly: name, email address, phone number, profile information, verification documents, listings, messages, reviews, and payment details processed through our partners (Stripe, Paystack, M-Pesa). We also automatically collect usage data, device information, log data, and approximate location based on IP address.',
       },
       {
         heading: '2. How We Use Your Information',
-        body: 'We use your information to: provide and maintain the Platform, personalize your experience, communicate with you about updates and features, analyze usage patterns to improve our services, and comply with legal obligations.',
+        body: 'We use your information to provide and maintain the Platform, authenticate your identity, personalize your experience, process payments, send account-related communications, detect fraud and maintain safety, analyze usage to improve our features, and comply with legal obligations.',
       },
       {
-        heading: '3. Data Sharing',
-        body: 'We do not sell your personal information. We may share data with service providers who assist in operating the Platform, when required by law, or with your explicit consent. All third-party providers are bound by confidentiality agreements.',
+        heading: '3. How We Share Your Information',
+        body: 'We do not sell your personal information. We may share data with: other users (your name, avatar, and listings are visible as part of normal Platform functionality), trusted service providers who assist in operating the Platform (Supabase, Stripe, Paystack, Vercel), and when required by law or to protect rights and safety.',
       },
       {
         heading: '4. Data Security',
-        body: 'We implement industry-standard security measures to protect your data, including encryption in transit and at rest, regular security audits, and access controls. However, no method of electronic storage is 100% secure.',
+        body: 'We implement industry-standard security measures including TLS/SSL encryption in transit, encryption at rest for sensitive data, Row Level Security (RLS) on our database, restricted access to production systems, and regular security assessments. No method of electronic storage is 100% secure.',
       },
       {
         heading: '5. Your Rights',
-        body: 'You have the right to access, correct, or delete your personal data. You can manage your data through your account settings or by contacting us. You may also request a copy of your data or withdraw consent for processing.',
+        body: 'You have the right to access, correct, or delete your personal data. You can request a copy of your data, withdraw consent, object to processing, or request restriction. Exercise these rights through your account settings or by contacting privacy@hama.app.',
       },
       {
         heading: '6. Data Retention',
-        body: 'We retain your data for as long as your account is active or as needed to provide services. You can request deletion of your account and associated data at any time. Certain data may be retained for legal compliance.',
+        body: 'Account data is retained while active and for 30 days after deletion. Listings are kept until removed. Messages are retained during your use of chat. Payment records are kept for 7 years per financial regulations. Analytics data is anonymized after 24 months.',
       },
       {
         heading: '7. Third-Party Services',
-        body: 'The Platform may integrate with third-party services (e.g., payment processors, analytics providers). These services have their own privacy policies, and we encourage you to review them.',
+        body: 'The Platform integrates with third-party services including Supabase (database), Stripe and Paystack (payments), Safaricom (M-Pesa), and Vercel (hosting). Each has its own privacy policy governing their handling of your data.',
+      },
+      {
+        heading: '8. Children\'s Privacy',
+        body: 'The Platform is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we become aware that we have collected data from a child, we will delete it promptly.',
+      },
+      {
+        heading: '9. Changes to This Policy',
+        body: 'We may update this Privacy Policy from time to time. Material changes will be communicated through the Platform or by email. The last updated date at the top indicates when this policy was last revised.',
+      },
+      {
+        heading: '10. Contact Us',
+        body: 'For questions about this Privacy Policy, contact us at privacy@hama.app or support@hama.app.',
       },
     ],
   },
@@ -185,6 +217,12 @@ export const LegalScreen: React.FC<LegalScreenProps> = ({ navigation, initialPag
       {/* Content */}
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.pageTitle}>{content.title}</Text>
+        {'hostedUrl' in content && content.hostedUrl && (
+          <TouchableOpacity style={styles.onlineLink} onPress={() => Linking.openURL(content.hostedUrl)}>
+            <Ionicons name="open-outline" size={16} color={COLORS.primary} />
+            <Text style={styles.onlineLinkText}>View Full Policy Online</Text>
+          </TouchableOpacity>
+        )}
         {content.sections.map((section, index) => (
           <View key={index} style={styles.section}>
             <Text style={styles.sectionHeading}>{section.heading}</Text>
@@ -260,6 +298,21 @@ const styles = StyleSheet.create({
   pageTitle: {
     ...FONTS.h2,
     color: COLORS.text,
+  },
+  onlineLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(255, 107, 0, 0.08)',
+    borderRadius: RADIUS.md,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 0, 0.2)',
+  },
+  onlineLinkText: {
+    color: COLORS.primary,
+    fontSize: 14,
+    fontWeight: '600',
   },
   section: {
     gap: 8,
