@@ -56,7 +56,7 @@ export const ProductDetailScreen: React.FC<{ route: any; navigation: any }> = ({
       >
         {/* Hero Image */}
         <Animated.View style={[styles.imageContainer, { opacity: imageOpacity }]}>
-          <Image source={{ uri: product.images[0] }} style={styles.heroImage} />
+          <Image source={{ uri: product.images?.[0] ?? 'https://placehold.co/800x600/1a1a1a/666?text=No+Image' }} style={styles.heroImage} />
           <LinearGradient colors={['transparent', COLORS.bg]} style={styles.imageGradient} />
           {/* Back button */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>

@@ -78,7 +78,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, feat
         style={styles.touchable}
       >
         <View style={styles.imageContainer}>
-          <Image source={{ uri: product.images[0] }} style={styles.image} resizeMode="cover" />
+          <Image source={{ uri: product.images?.[0] ?? 'https://placehold.co/400x400/1a1a1a/666?text=No+Image' }} style={styles.image} resizeMode="cover" />
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.7)']}
             style={styles.imageGradient}

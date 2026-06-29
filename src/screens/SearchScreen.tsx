@@ -157,7 +157,7 @@ export const SearchScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                   <TouchableOpacity key={property.id} activeOpacity={0.9} style={styles.resultItem} onPress={() => navigation.navigate('PropertyDetail', { propertyId: property.id })}>
                     <GlassCard>
                       <View style={styles.resultRow}>
-                        <Image source={{ uri: property.images[0] }} style={styles.resultImage} />
+                        <Image source={{ uri: property.images?.[0] ?? 'https://placehold.co/400x300/1a1a1a/666?text=No+Image' }} style={styles.resultImage} />
                         <View style={styles.resultInfo}>
                           <Text style={styles.resultTitle} numberOfLines={1}>{property.title}</Text>
                           <Text style={styles.resultPrice}>KSh {property.price.toLocaleString()}/mo</Text>
@@ -183,7 +183,7 @@ export const SearchScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                   <TouchableOpacity key={product.id} activeOpacity={0.9} style={styles.resultItem} onPress={() => navigation.navigate('ProductDetail', { productId: product.id })}>
                     <GlassCard>
                       <View style={styles.resultRow}>
-                        <Image source={{ uri: product.images[0] }} style={styles.resultImage} />
+                        <Image source={{ uri: product.images?.[0] ?? 'https://placehold.co/400x400/1a1a1a/666?text=No+Image' }} style={styles.resultImage} />
                         <View style={styles.resultInfo}>
                           <Text style={styles.resultTitle} numberOfLines={1}>{product.name}</Text>
                           <Text style={styles.resultPrice}>KSh {product.price.toLocaleString()}</Text>

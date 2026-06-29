@@ -93,7 +93,7 @@ export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) =
                 <TouchableOpacity key={property.id} activeOpacity={0.9} style={styles.savedItem} onPress={() => navigation.navigate('PropertyDetail', { propertyId: property.id })}>
                   <GlassCard>
                     <View style={styles.savedItemRow}>
-                      <Image source={{ uri: property.images[0] }} style={styles.savedImage} />
+                      <Image source={{ uri: property.images?.[0] ?? 'https://placehold.co/400x300/1a1a1a/666?text=No+Image' }} style={styles.savedImage} />
                       <View style={styles.savedInfo}>
                         <Text style={styles.savedTitle} numberOfLines={2}>{property.title}</Text>
                         <Text style={styles.savedPrice}>KSh {property.price.toLocaleString()}/mo</Text>
@@ -123,7 +123,7 @@ export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) =
                 {savedProducts.map(product => (
                   <TouchableOpacity key={product.id} activeOpacity={0.9} style={styles.productCard} onPress={() => navigation.navigate('ProductDetail', { productId: product.id })}>
                     <GlassCard noPadding>
-                      <Image source={{ uri: product.images[0] }} style={styles.productImage} />
+                      <Image source={{ uri: product.images?.[0] ?? 'https://placehold.co/400x400/1a1a1a/666?text=No+Image' }} style={styles.productImage} />
                       <View style={styles.productInfo}>
                         <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
                         <Text style={styles.productPrice}>KSh {product.price.toLocaleString()}</Text>

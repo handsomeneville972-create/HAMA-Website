@@ -189,7 +189,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               {properties.map((property) => (
                 <TouchableOpacity key={property.id} activeOpacity={0.9} style={styles.propertyCard} onPress={() => navigation.navigate('PropertyDetail', { propertyId: property.id })}>
                   <GlassCard>
-                    <Image source={{ uri: property.images[0] }} style={styles.propertyImage} />
+                    <Image source={{ uri: property.images?.[0] ?? 'https://placehold.co/400x300/1a1a1a/666?text=No+Image' }} style={styles.propertyImage} />
                     <View style={styles.propertyInfo}>
                       <Text style={styles.propertyTitle} numberOfLines={1}>{property.title}</Text>
                       <Text style={styles.propertyPrice}>{formatPrice(property.price)}/mo</Text>
