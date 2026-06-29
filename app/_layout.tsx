@@ -7,6 +7,7 @@ import { View, StyleSheet, AppState, AppStateStatus } from 'react-native';
 import { COLORS } from '../src/constants/theme';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
 import { EarlyAccessProvider } from '../src/contexts/EarlyAccessContext';
+import { ErrorBoundary } from '../src/components/ErrorBoundary';
 import { EarlyAccessBanner } from '../src/components/EarlyAccessBanner';
 import { EarlyAccessModal } from '../src/components/EarlyAccessModal';
 import { PriorityWaitlistForm } from '../src/components/PriorityWaitlistForm';
@@ -93,6 +94,7 @@ export default function RootLayout() {
   }, []);
 
   return (
+    <ErrorBoundary>
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <EarlyAccessProvider>
@@ -285,6 +287,7 @@ export default function RootLayout() {
         </EarlyAccessProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }
 
